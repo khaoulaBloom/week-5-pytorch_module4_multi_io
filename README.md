@@ -1,78 +1,60 @@
+# Week 5 PyTorch: Multi-Input / Multi-Output
 
-Multi-Input / Multi-Output
+A compact PyTorch learning project that walks through:
 
-This project walks through a complete progression from basic multi-input prediction to a full multi-input, multi-output training pipeline in PyTorch.
+1. Manual multi-input prediction
+2. Multi-input model training
+3. Manual multi-output prediction
+4. Multi-output model training
+5. A complete multi-input/multi-output training pipeline with train/val/test split and early stopping
 
-## What We Built
-
-1. Multi-input single-output prediction (manual tensor math)
-2. Multi-input single-output training (`nn.Linear(2, 1)`)
-3. Multi-input multi-output prediction (manual tensor math)
-4. Multi-input multi-output training (`nn.Linear(2, 2)`)
-5. Final end-to-end pipeline with:
-   - Custom `Dataset`
-   - Train/validation/test split
-   - `DataLoader`
-   - Early stopping
-   - Loss curves with Matplotlib
-   - Learned parameter inspection
-
-## Project Files
+## Project Structure
 
 - `step1_multi_input_prediction.py`  
-  Manual prediction using `Y = X @ W + b` for 2 inputs -> 1 output.
+  Manual prediction with 2 input features and 1 output using matrix multiplication.
 
 - `step2_multi_input_training.py`  
-  Trains a linear model with `MSELoss` and `SGD` for 2 inputs -> 1 output.
+  Trains `nn.Linear(2, 1)` with MSE loss and SGD.
 
 - `step3_multi_output_prediction.py`  
-  Manual prediction for 2 inputs -> 2 outputs using matrix multiplication.
+  Manual prediction with 2 input features and 2 outputs.
 
 - `step4_multi_output_training.py`  
-  Trains a 2-output linear model with `MSELoss` and `Adam`.
+  Trains `nn.Linear(2, 2)` with MSE loss and Adam.
 
 - `final_multi_io_pipeline.py`  
-  Full workflow using synthetic data, `Dataset`, `DataLoader`, train/val/test split, early stopping, and training-vs-validation loss plotting.
+  End-to-end synthetic dataset workflow using:
+  - custom `Dataset`
+  - `DataLoader`
+  - train/validation/test split
+  - early stopping
+  - loss plotting with Matplotlib
 
-## Concepts Used
+## Learning Objective
 
-- PyTorch tensors
-- Matrix multiplication (`@`)
-- `nn.Linear`
-- Forward pass
-- Loss calculation with `nn.MSELoss`
-- Backpropagation (`loss.backward()`)
-- Optimizers (`SGD`, `Adam`)
-- Custom `Dataset` and batching with `DataLoader`
-- Model evaluation with `torch.no_grad()`
-- Early stopping for regularization
-- Train/validation/test workflow
+Understand how PyTorch linear models scale from:
 
-## Synthetic Relationships in Final Pipeline
+- single-output regression (`Linear(2, 1)`) to
+- multi-output regression (`Linear(2, 2)`),
 
-In `final_multi_io_pipeline.py`, targets are generated as:
-
-- `y1 = 2*x1 + 3*x2 + 1`
-- `y2 = 4*x1 + 5*x2 + 2`
-
-The model learns these mappings from data.
+while using standard training practices (batching, validation, early stopping).
 
 ## Requirements
 
-This project uses Python 3.11+ and the following packages:
+- Python `3.11+`
+- Packages:
+  - `torch`
+  - `matplotlib`
 
-- `torch`
-- `matplotlib`
-
-Install them with:
+Install dependencies:
 
 ```bash
 pip install torch matplotlib
 ```
 
-## How to Run
+## How To Run
 
-Run each step from the project root:
+From project root:
 
 ```bash
 python step1_multi_input_prediction.py
@@ -82,11 +64,76 @@ python step4_multi_output_training.py
 python final_multi_io_pipeline.py
 ```
 
-## Expected Learning Outcome
+## What Each Script Demonstrates
 
-After completing this project, you should be comfortable with:
+### 1) `step1_multi_input_prediction.py`
 
-- Building linear models with multiple input features
-- Producing multiple outputs in a single model
-- Training and validating PyTorch models
-- Structuring a simple but realistic training pipeline
+Uses a fixed formula:
+
+- `y = x1*2 + x2*3 + 1`
+
+implemented via tensor operations:
+
+- `Y_pred = X @ W + b`
+
+### 2) `step2_multi_input_training.py`
+
+Learns the same relationship from data with:
+
+- model: `nn.Linear(2, 1)`
+- loss: `nn.MSELoss()`
+- optimizer: `optim.SGD(lr=0.01)`
+
+The learned weight should approach approximately `[2, 3]` and bias near `1`.
+
+### 3) `step3_multi_output_prediction.py`
+
+Computes 2 outputs at once:
+
+- `Y_pred = X @ W + b` where `W` has shape `(2, 2)`
+
+### 4) `step4_multi_output_training.py`
+
+Learns two targets simultaneously:
+
+- `y1 = 2*x1 + 3*x2`
+- `y2 = 4*x1 + 5*x2`
+
+with:
+
+- model: `nn.Linear(2, 2)`
+- loss: `nn.MSELoss()`
+- optimizer: `optim.Adam(lr=0.01)`
+
+### 5) `final_multi_io_pipeline.py`
+
+Builds a full training pipeline on synthetic data:
+
+- Inputs: 2 features
+- Outputs:
+  - `y1 = 2*x1 + 3*x2 + 1`
+  - `y2 = 4*x1 + 5*x2 + 2`
+- Split:
+  - Train: 70%
+  - Validation: 15%
+  - Test: 15%
+- Early stopping patience: `25`
+- Visualization: training vs validation loss curves
+
+At the end it prints:
+
+- final test loss
+- learned weight matrix
+- learned bias vector
+
+## Notes
+
+- Results vary slightly run-to-run due to random initialization and random dataset sampling.
+- `final_multi_io_pipeline.py` opens a Matplotlib plot window. In headless environments, configure a non-interactive backend or remove `plt.show()`.
+
+## Suggested Next Steps
+
+1. Add fixed random seeds for reproducible runs.
+2. Save and reload model checkpoints (`torch.save` / `load_state_dict`).
+3. Track metrics per output (separate loss for `y1` and `y2`).
+4. Extend to a deeper network (`nn.Sequential`) and compare performance.
