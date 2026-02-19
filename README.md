@@ -1,4 +1,3 @@
-# Week 5 - PyTorch Module 4: 
 
 Multi-Input / Multi-Output
 
